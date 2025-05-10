@@ -1,56 +1,46 @@
 import { useState, useEffect } from 'react';
+import initialContacts from './contacts.json';
 import css from './App.module.css';
-import Description from './components/Description/Description';
-import Options from './components/Options/Options';
-import Feedback from './components/Feedback/Feedback';
-import Notification from './components/Notification/Notification';
+import ContactForm from './components/ContactForm/ContactForm';
+import SearchBox from './components/SearchBox/SearchBox';
+import ContactList from './components/ContactList/ContactList';
 
 export default function App() {
-  const [feedback, setFeedback] = useState(() => {
-    const savedFeedback = localStorage.getItem('feedback');
-    if (savedFeedback !== null) {
-      return JSON.parse(savedFeedback);
+  const [search, setSearch] = useState('');
+  const [contacts, setContacts] = useState(() => {
+    const savedContacts = localStorage.getItem('contacts');
+    if (savedContacts !== null) {
+      return JSON.parse(savedContacts);
     }
-    return { good: 0, neutral: 0, bad: 0 };
+    return initialContacts;
   });
 
   useEffect(() => {
-    localStorage.setItem('feedback', JSON.stringify(feedback));
-  }, [feedback]);
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  const updateFeedback = (feedbackType) => {
-    setFeedback({
-      ...feedback,
-      [feedbackType]: feedback[feedbackType] + 1,
+  const addContact = (newContact) => {
+    setContacts((prevContacts) => {
+      return [...prevContacts, newContact];
     });
   };
 
-  const resetFeedback = () => setFeedback({ good: 0, neutral: 0, bad: 0 });
+  const deleteContact = (contactId) => {
+    setContacts((prevContacts) => {
+      return prevContacts.filter((contact) => contact.id !== contactId);
+    });
+  };
 
-  const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
-  const positiveFeedback = totalFeedback
-    ? Math.round((feedback.good / totalFeedback) * 100)
-    : 0;
+  const searchContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <div className={css.container}>
-      <Description />
-      <Options
-        onLeaveFeedback={updateFeedback}
-        onReset={resetFeedback}
-        totalFeedback={totalFeedback}
-      />
-      {totalFeedback > 0 ? (
-        <Feedback
-          good={feedback.good}
-          neutral={feedback.neutral}
-          bad={feedback.bad}
-          total={totalFeedback}
-          positive={positiveFeedback}
-        />
-      ) : (
-        <Notification message="No feedback yet" />
-      )}
+      <h1 className={css.title}>Phonebook</h1>
+      <ContactForm onAdd={addContact} />
+      <SearchBox value={search} onSearch={setSearch} />
+      <ContactList contacts={searchContacts} onDelete={deleteContact} />
     </div>
   );
 }

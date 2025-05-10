@@ -1,5 +1,9 @@
 .container {
-  margin: 0 auto;
-  max-width: 1440px;
-  padding: 15px;
+  max-width: 1200px;
+  padding: 32px;
+}
+
+.title {
+  font-size: 36px;
+  margin-bottom: 24px;
 }
