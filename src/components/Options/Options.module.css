@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  margin-left: 50px;
+  gap: 4px;
+}
+
+button {
+  font-size: 16px;
+}
+
+button:hover,
+button:hover {
+  cursor: pointer;
+}
